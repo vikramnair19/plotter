@@ -6,7 +6,7 @@
 using namespace std;
 #include "Plotter.h"
 
-int sample_data[]={0,1,1,1,0,1,0,0,1,0};
+int sample_data[]={0,1,1,1,0,1,0,0,1,0,1,1,0,1,0,1,0};
 
 
 Plotter::Plotter(QWidget *parent)
@@ -22,31 +22,27 @@ Plotter::Plotter(QWidget *parent)
 void Plotter::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    const int width = QApplication::desktop()->width();
-    const int height= 100;
-    float sample_freq = 10;  //Frequency in Hz
-    float signal_time = 1;  //Signal length in seconds
-    float total_samples = signal_time*sample_freq;
-    float distance_between_samples=width/total_samples;
+    QSizeF size=this->size();
+    const int width = 10000;
+    const int height= size.height();
+    int zoom = 10;
+    float total_samples = sizeof(sample_data)/sizeof(int);
+    float distance_between_samples=width/zoom;
     float currx=1; float curry=height-5;
     float nextx,nexty;
+    float halfway;
     painter.setRenderHint(QPainter::Antialiasing,true);
 
-    QSizeF size=this->size();
-    QPoint p;
-    //printf("%f,%f\n",size.width(),size.height());
-    //printf("distance between samples = %f",distance_between_samples);
     painter.drawRect(1,1,size.width()-3,size.height()-3);
-    //this->setMinimumSize(width,height);
-    //this->setMaximumSize(width,height);
     for(int i=0;i<total_samples;i++)
     {
         nextx=currx+distance_between_samples;
         painter.drawLine(nextx,0,nextx,height);
         currx=nextx;
     }
-    currx=1;curry=height-5;
-    for(int i=0;i<total_samples;i++)
+    currx=1;
+    curry=sample_data[0] ? height-50:height-5;
+    for(int i=1;i<total_samples;i++)
     {
         if(sample_data[i])
         {
@@ -57,8 +53,11 @@ void Plotter::paintEvent(QPaintEvent *)
             nexty=height-5;
         }
         nextx=currx+distance_between_samples;
-        painter.drawLine(currx,curry,nextx,nexty);
-        //printf("(%f,%f),(%f,%f)",currx,curry,nextx,nexty);
+        halfway=currx+distance_between_samples/2;
+        painter.drawLine(currx,curry,halfway,curry);
+        painter.drawLine(halfway,curry,halfway,nexty);
+        painter.drawLine(halfway,nexty,nextx,nexty);
+
         currx=nextx;
         curry=nexty;
 
