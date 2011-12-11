@@ -6,7 +6,7 @@
 using namespace std;
 #include "Plotter.h"
 
-Plotter::Plotter(QWidget *parent)
+Plotter::Plotter(QVector<quint8> sd, QWidget *parent)
   : QWidget(parent)
 {
     width = 10000;
@@ -16,14 +16,15 @@ Plotter::Plotter(QWidget *parent)
     margin_bottom=3;
     waveform_height=20;
     zoom = 1000;
-    total_samples = 100;
+    total_samples = sd.size();
     height = 50;
     start_sample=0;
-    draw_sample_bars=false;
+    draw_sample_bars=true;
     setWindowTitle(tr("Plotter"));
     resize(QApplication::desktop()->width(),height);
-    for(quint32 i=0;i<total_samples;i++)
-        sampled_data.append(rand() & 1);
+    sampled_data=sd;
+//    for(quint32 i=0;i<total_samples;i++)
+//        sampled_data.append(rand() & 1);
     this->setMaximumHeight(height);
     this->setMinimumHeight(height);
 }
@@ -32,8 +33,6 @@ void Plotter::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     QSizeF size=this->size();
-//    QBrush brush(QColor(0,0,0));
-//    painter.setBackground(brush);
     quint32 height= size.height();
     quint32 waveform_base=height-5;
     quint32 waveform_top=waveform_base-waveform_height;
@@ -76,6 +75,7 @@ void Plotter::paintEvent(QPaintEvent *)
 
         currx=nextx;
         curry=nexty;
+        emit get_max_scroll_range(0,(int)get_max_starting_sample());
 
     }
 
@@ -99,4 +99,7 @@ QSize Plotter::sizeHint(){
 }
 void Plotter::set_sampled_data(QVector<quint8> sd){
     this->sampled_data=sd;
+}
+quint32 Plotter::get_max_starting_sample(void){
+    return (total_samples-total_viewable_samples);
 }

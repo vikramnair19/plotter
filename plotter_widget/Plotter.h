@@ -7,17 +7,19 @@ class Plotter:public QWidget
     Q_OBJECT
 public:
 
-    Plotter(QWidget *parent = 0);
+    Plotter(QVector <quint8> sd, QWidget *parent = 0);
     quint32 get_total_viewable_samples(void);
     quint32 get_starting_sample(void);
     QSize sizeHint();
     void set_sampled_data(QVector<quint8> sd);
+    quint32 get_max_starting_sample(void);
 
 public slots:
     void set_starting_sample(int);
 
 
-
+signals:
+    void get_max_scroll_range(int,int);
 
 protected:
     QVector <quint8> sampled_data;       //Holds the sampled data
