@@ -8,9 +8,19 @@ class Plotter:public QWidget
 public:
 
     Plotter(QWidget *parent = 0);
+    quint32 get_total_viewable_samples(void);
+    quint32 get_starting_sample(void);
+    QSize sizeHint();
+    void set_sampled_data(QVector<quint8> sd);
+
+public slots:
+    void set_starting_sample(int);
+
+
+
 
 protected:
-    QVector <qint8> sampled_data;       //Holds the sampled data
+    QVector <quint8> sampled_data;       //Holds the sampled data
     quint32 width;                      //Total width of waveform
     quint32 margin_left;
     quint32 margin_right;
@@ -19,6 +29,11 @@ protected:
     quint32 waveform_height;
     quint32 zoom;
     quint32 total_samples;
+    quint32 height;
+    quint32 start_sample;
+    quint32 total_viewable_samples;
+    bool draw_sample_bars;
+
 
 
     void paintEvent(QPaintEvent *event);
